@@ -1,0 +1,168 @@
+#include "mbed.h"
+
+float Vo;
+float R1 = 10000;
+float logR, R2, T;
+float T25= 298.15;
+float R25 = 3600;
+float beta = 3950;
+float Temp_laser;
+float potenza = 0.0f;
+float marg = 5;
+ 
+AnalogOut  aout(D13);
+AnalogIn ain(A1);
+DigitalOut hot(D3);
+DigitalOut cold(D4);
+ 
+int main(void)
+{   
+    //calcolo della temperatura in celsius con il termistore
+    //questo mi servirà solo nella fase di test
+    //normalmente la temperatura Temp_laser verrà impostata a priori
+    Vo = ain.read()*5;
+    R2 = R1 * ((5 / Vo) - 1.0);
+    logR = log(R2/R25);
+    T = (1.0 / (logR/beta + 1/T25));
+    T = T - 273.15;
+    
+    Temp_laser = T; //suppongo che la temperatura alla quale deve trovarsi il dispositivo sia proprio quella letta all'inizio
+    
+    printf("Temperature:%.2f C\n\r",T); 
+   
+   //ponte-H spento
+   hot = 0;
+   cold = 0;
+
+    wait_ms(500);
+    while (1) {
+        Vo = ain.read()*5;
+        R2 = R1 * ((5 / Vo) - 1.0);
+        logR = log(R2/R25);
+        T = (1.0 / (logR/beta + 1/T25));
+        T = T - 273.15;
+    if(T==Temp_laser || (T<Temp_laser+marg && T>Temp_laser-marg)) {
+                    printf("Temperatura stabile\n\r"); 
+                    hot = 0;
+                    cold = 0;
+                    printf("Temperature:%.2f C\n\r",T); 
+                    wait(1);
+        } else if(T>=Temp_laser+marg) {
+                    printf("Raffreddamento in corso...\n\r"); 
+                    Vo = ain.read()*5;
+                    R2 = R1 * ((5 / Vo) - 1.0);
+                    logR = log(R2/R25);
+                    T = (1.0 / (logR/beta + 1/T25));
+                    T = T - 273.15;
+                    cold = 1;
+                    hot = 0;
+                    wait_ms(100);
+                    printf("Temperature:%.2f C\n\r",T); 
+                    while(T>Temp_laser+marg) {
+                        potenza = 0.12f + 0.1f*(sqrt(T-Temp_laser));
+                        aout.write(potenza);
+                        Vo = ain.read()*5;
+                        R2 = R1 * ((5 / Vo) - 1.0);
+                        logR = log(R2/R25);
+                        T = (1.0 / (logR/beta + 1/T25));
+                        T = T - 273.15;
+                        wait_ms(100);
+                        }
+                } else {
+                    printf("Riscaldamento in corso...\n\r"); 
+                    Vo = ain.read()*5;
+                    R2 = R1 * ((5 / Vo) - 1.0);
+                    logR = log(R2/R25);
+                    T = (1.0 / (logR/beta + 1/T25));
+                    T = T - 273.15;
+                    cold = 0;
+                    hot = 1;
+                    wait_ms(100);
+                    printf("Temperature:%.2f C\n\r",T); 
+                    while(T<=Temp_laser-marg) { 
+                        potenza = 0.12f + 0.1f*(sqrt(Temp_laser-T));
+                        aout.write(potenza);
+                        Vo = ain.read()*5;
+                        R2 = R1 * ((5 / Vo) - 1.0);
+                        logR = log(R2/R25);
+                        T = (1.0 / (logR/beta + 1/T25));
+                        T = T - 273.15;
+                        wait_ms(100);
+
+                    }
+            }
+    }
+}
+)*5;
+    R2 = R1 * ((5 / Vo) - 1.0);
+    logR = log(R2/R25);
+    T = (1.0 / (logR/beta + 1/T25));
+    T = T - 273.15;
+    
+    Temp_laser = T; //suppongo che la temperatura alla quale deve trovarsi il dispositivo sia proprio quella letta all'inizio
+    
+    printf("Temperature:%.2f C\n\r",T); 
+   
+   //ponte-H spento
+   hot = 0;
+   cold = 0;
+
+    wait_ms(500);
+    while (1) {
+        Vo = ain.read()*5;
+        R2 = R1 * ((5 / Vo) - 1.0);
+        logR = log(R2/R25);
+        T = (1.0 / (logR/beta + 1/T25));
+        T = T - 273.15;
+    if(T==Temp_laser || (T<Temp_laser+marg && T>Temp_laser-marg)) {
+                    printf("Temperatura stabile\n\r"); 
+                    hot = 0;
+                    cold = 0;
+                    printf("Temperature:%.2f C\n\r",T); 
+                    wait(1);
+        } else if(T>=Temp_laser+marg) {
+                    printf("Raffreddamento in corso...\n\r"); 
+                    Vo = ain.read()*5;
+                    R2 = R1 * ((5 / Vo) - 1.0);
+                    logR = log(R2/R25);
+                    T = (1.0 / (logR/beta + 1/T25));
+                    T = T - 273.15;
+                    cold = 1;
+                    hot = 0;
+                    wait_ms(100);
+                    printf("Temperature:%.2f C\n\r",T); 
+                    while(T>Temp_laser+marg) {
+                        potenza = 0.12f + 0.1f*(sqrt(T-Temp_laser));
+                        aout.write(potenza);
+                        Vo = ain.read()*5;
+                        R2 = R1 * ((5 / Vo) - 1.0);
+                        logR = log(R2/R25);
+                        T = (1.0 / (logR/beta + 1/T25));
+                        T = T - 273.15;
+                        wait_ms(100);
+                        }
+                } else {
+                    printf("Riscaldamento in corso...\n\r"); 
+                    Vo = ain.read()*5;
+                    R2 = R1 * ((5 / Vo) - 1.0);
+                    logR = log(R2/R25);
+                    T = (1.0 / (logR/beta + 1/T25));
+                    T = T - 273.15;
+                    cold = 0;
+                    hot = 1;
+                    wait_ms(100);
+                    printf("Temperature:%.2f C\n\r",T); 
+                    while(T<=Temp_laser-marg) { 
+                        potenza = 0.12f + 0.1f*(sqrt(Temp_laser-T));
+                        aout.write(potenza);
+                        Vo = ain.read()*5;
+                        R2 = R1 * ((5 / Vo) - 1.0);
+                        logR = log(R2/R25);
+                        T = (1.0 / (logR/beta + 1/T25));
+                        T = T - 273.15;
+                        wait_ms(100);
+
+                    }
+            }
+    }
+}
